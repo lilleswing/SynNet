@@ -153,7 +153,6 @@ dmypy.json
 # data/*
 .DS_Store
 oracle/*
-*.json*
 *.npy
 *logs*
 *.gz
@@ -169,7 +168,6 @@ nohup.out
 *.out
 *.swp
 *slurm*
-*.sh
 *.pth
 *.ckpt
 *_old*

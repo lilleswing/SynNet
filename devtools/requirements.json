@@ -1,0 +1,16 @@
+{
+  "channels": [
+    "rdkit",
+    "anaconda",
+    "conda-forge",
+    "pytorch"
+  ],
+  "packages": [
+  ],
+  "wheels": [
+  ],
+  "cpu_packages": [
+  ],
+  "gpu_packages": [
+  ]
+}
