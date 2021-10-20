@@ -3,6 +3,7 @@ Unit tests for the data preparation.
 """
 import unittest
 import os
+from shutil import copyfile
 import pandas as pd
 from tqdm import tqdm
 from scipy import sparse
@@ -23,7 +24,7 @@ class TestDataPrep(unittest.TestCase):
         # 'SynNet/data/rxn_set_hb.txt'
         path_to_rxn_templates = './data/rxn_set_hb_test.txt'
 
-        # load the reference building blocks (1K here)
+        # load the reference building blocks (100 here)
         path_to_building_blocks = './data/building_blocks_matched.csv.gz'
         building_blocks = pd.read_csv(path_to_building_blocks, compression='gzip')['SMILES'].tolist()
 
@@ -63,11 +64,11 @@ class TestDataPrep(unittest.TestCase):
         r_ref.load(path_to_rxns)
         rxns = r_ref.rxns
 
-        # load the reference building blocks (1K here)
+        # load the reference building blocks (100 here)
         path_to_building_blocks = './data/building_blocks_matched.csv.gz'
         building_blocks = pd.read_csv(path_to_building_blocks, compression='gzip')['SMILES'].tolist()
 
-        num_trials   = 14
+        num_trials   = 25
         num_finish   = 0
         num_error    = 0
         num_unfinish = 0
@@ -88,10 +89,10 @@ class TestDataPrep(unittest.TestCase):
         synthetic_tree_set = SyntheticTreeSet(sts=trees)
         synthetic_tree_set.save('./data/st_data.json.gz')
 
-        # check that the number of finished trees generated is == 10, and that
-        # the number of unfinished trees generated is == 4
-        self.assertEqual(num_finish, 10)
-        self.assertEqual(num_unfinish, 4)
+        # check that the number of finished trees generated is == 3, and that
+        # the number of unfinished trees generated is == 0
+        self.assertEqual(num_finish, 3)
+        self.assertEqual(num_unfinish, 0)
 
         # check here that the synthetic trees were correctly saved by
         # comparing to a provided reference file in 'SynNet/tests/data/ref/'
@@ -112,7 +113,7 @@ class TestDataPrep(unittest.TestCase):
         nbits        = 4096
         dataset_type = 'train'
 
-        path_st            = './data/st_hb_test.json.gz'
+        path_st            = './data/ref/st_data.json.gz'
         save_dir           = './data/'
         reference_data_dir = './data/ref/'
 
@@ -168,18 +169,22 @@ class TestDataPrep(unittest.TestCase):
         one-hot encoded Action, Reactant 1, Reactant 2, and Reaction network
         files. In other words, the preparation of data for each specific network.
         """
+        main_dir = './data/'
+        ref_dir = './data/ref/'
+        # copy data from the reference directory to use for this particular test
+        copyfile(f'{ref_dir}states_0_train.npz', f'{main_dir}states_0_train.npz')
+        copyfile(f'{ref_dir}steps_0_train.npz', f'{main_dir}steps_0_train.npz')
+        
         # the lines below will save Action-, Reactant 1-, Reaction-, and Reactant 2-
         # specific files directly to the 'SynNet/tests/data/' directory (e.g.
         # 'X_act_{train/test/valid}.npz' and 'y_act_{train/test/valid}.npz'
         # 'X_rt1_{train/test/valid}.npz' and 'y_rt1_{train/test/valid}.npz'
         # 'X_rxn_{train/test/valid}.npz' and 'y_rxn_{train/test/valid}.npz'
         # 'X_rt2_{train/test/valid}.npz' and 'y_rt2_{train/test/valid}.npz'
-        main_dir = './data/'
         prep_data(main_dir=main_dir, num_rxn=3, out_dim=300)
 
         # check that the saved files match the reference files in
         # 'SynNet/tests/data/ref':
-        ref_dir = './data/ref/'
 
         # Action network data
         X_act = sparse.load_npz(f'{main_dir}X_act_train.npz')
