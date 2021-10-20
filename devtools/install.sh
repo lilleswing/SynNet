@@ -41,6 +41,4 @@ conda env create -f environment.yml
 source activate rdkit
 pip install pytest
 
-export PYTHONPATH=`pwd`:$PYTHONPATH
-cd tests/
-python -m unittest
+
